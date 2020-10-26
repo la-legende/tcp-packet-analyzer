@@ -1,11 +1,10 @@
-TCP Client based packet analyzer for MMORPG game NosTale. 
+##TCP Client based packet analyzer for MMORPG game NosTale. 
+
 Mainly created and designed for BladeTiger12's Packet Logger.
 
 Setup:
 
-1. Download BladeTiger12's packet logger:
-
-[Packet Logger](https://www.elitepvpers.com/forum/nostale-hacks-bots-cheats-exploits/4297215-release-packetlogger.html)
+1. Download BladeTiger12's packet logger: [Packet Logger](https://www.elitepvpers.com/forum/nostale-hacks-bots-cheats-exploits/4297215-release-packetlogger.html)
 
 2. Downlaod damage counter from project releases. 
 
