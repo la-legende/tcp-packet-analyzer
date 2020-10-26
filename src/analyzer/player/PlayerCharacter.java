@@ -106,4 +106,92 @@ public class PlayerCharacter {
     public void setWasSoftDamage() {
         wasSoftDamage = true;
     }
+
+    public int getPlayerId() {
+        return playerId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public int getHeroLevel() {
+        return heroLevel;
+    }
+
+    public String getFamily() {
+        return family;
+    }
+
+    public int getDamage() {
+        return damage;
+    }
+
+    public int getAmountOfHits() {
+        return amountOfHits;
+    }
+
+    public int getBonCritics() {
+        return bonCritics;
+    }
+
+    public int getCritics() {
+        return critics;
+    }
+
+    public int getMisses() {
+        return misses;
+    }
+
+    public int getSoftDamageAmount() {
+        return softDamageAmount;
+    }
+
+    public int getOnyxCounter() {
+        return onyxCounter;
+    }
+
+    public int getLowestHit() {
+        return lowestHit;
+    }
+
+    public int getBiggestHit() {
+        return biggestHit;
+    }
+
+    public void displayFullInfo() {
+        StringBuilder stringBuilder;
+
+        stringBuilder = new StringBuilder();
+        stringBuilder.append("Player ID: ").append(getId()).append("\n");
+        stringBuilder.append("Nick: ").append(getName()).append("\n");
+        stringBuilder.append("Family: ").append(getFamily()).append("\n");
+        stringBuilder.append("Full damage done: ").append(getDamage()).append("\n");
+        stringBuilder.append("Full amount of hits: ").append(getAmountOfHits()).append("\n");
+        stringBuilder.append("BonCritics hit: ").append(getBonCritics()).append("\n");
+        stringBuilder.append("Critical hits: ").append(getCritics()).append("\n");
+        stringBuilder.append("Missed hit: ").append(getMisses()).append("\n");
+        stringBuilder.append("Normal attack soft damage hits: ").append(getSoftDamageAmount()).append("\n");
+        stringBuilder.append("Number of summoned onyx: : ").append(getOnyxCounter()).append("\n");
+        stringBuilder.append("Damage done by onyx shadow: ").append(0).append("\n");        //TODO
+        stringBuilder.append("Lowest hit: ").append(getLowestHit()).append("\n");
+        stringBuilder.append("Biggest hit: ").append(getBiggestHit()).append("\n");
+        stringBuilder.append("\n").append("\n");
+        stringBuilder.append("Skilled used: ");
+        usedSkills.forEach(s -> {
+            stringBuilder.append(s).append(" -> ");
+        });
+        stringBuilder.append("\n");
+        System.out.println(stringBuilder.toString() + "\n");
+        killedPlayers.forEach(p -> {
+            stringBuilder.append("Killed player id: ").append(p.getId()).append("  |  ").append("Killed player name: ").append(p.getName()).append("\n");
+        });
+        stringBuilder.append("\n");
+
+        System.out.println(stringBuilder.toString());
+    }
 }
