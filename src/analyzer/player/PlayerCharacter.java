@@ -74,24 +74,26 @@ public class PlayerCharacter {
         amountOfHits++;
 
         switch (hitType) {
-            case 3, 6 -> {
+            case 3:
+            case 6:
                 if(wasSoftDamage) {
                     bonCritics++;
                     wasSoftDamage = false;
                 } else {
                     critics++;
                 }
-            }
-            case 4, 7 -> {
-                misses++;
+                break;
+        case 4:
+        case 7:
+            misses++;
+            wasSoftDamage = false;
+            break;
+        default :
+            if(wasSoftDamage) {
+                softDamageAmount++;
                 wasSoftDamage = false;
             }
-            default -> {
-                if(wasSoftDamage) {
-                    softDamageAmount++;
-                    wasSoftDamage = false;
-                }
-            }
+            break;
         }
     }
 

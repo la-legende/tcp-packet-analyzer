@@ -163,7 +163,6 @@ public class PacketAnalyzer {
 
          if(packetHeader.equals("say")) {
             if(packet.getArgument(1).charAt(0) == '!') {
-                String pack = packet.getPacketFields().toString();
                 String command = packet.getArgument(1).substring(1);
 
                 if(command.equals("help")) {
