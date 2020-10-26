@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="tcp-packet-analyzer:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/tcp_packet_analyzer_jar</output-path>
+    <root id="archive" name="tcp-packet-analyzer.jar">
+      <element id="module-output" name="tcp-packet-analyzer" />
+    </root>
+  </artifact>
+</component>
