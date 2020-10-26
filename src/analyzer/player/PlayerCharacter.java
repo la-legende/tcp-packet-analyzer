@@ -180,16 +180,13 @@ public class PlayerCharacter {
         stringBuilder.append("Damage done by onyx shadow: ").append(0).append("\n");        //TODO
         stringBuilder.append("Lowest hit: ").append(getLowestHit()).append("\n");
         stringBuilder.append("Biggest hit: ").append(getBiggestHit()).append("\n");
-        stringBuilder.append("\n").append("\n");
         stringBuilder.append("Skilled used: ");
         usedSkills.forEach(s -> {
             stringBuilder.append(s).append(" -> ");
         });
-        stringBuilder.append("\n");
-        System.out.println(stringBuilder.toString() + "\n");
-        killedPlayers.forEach(p -> {
-            stringBuilder.append("Killed player id: ").append(p.getId()).append("  |  ").append("Killed player name: ").append(p.getName()).append("\n");
-        });
+        //killedPlayers.forEach(p -> {
+        //    stringBuilder.append("Killed player id: ").append(p.getId()).append("  |  ").append("Killed player name: ").append(p.getName()).append("\n");
+        //});
         stringBuilder.append("\n");
 
         System.out.println(stringBuilder.toString());

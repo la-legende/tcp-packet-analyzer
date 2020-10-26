@@ -182,6 +182,8 @@ public class PacketAnalyzer {
                     System.out.println("!clear -> clear all info about everyone ever registered.");
 
                     isFrozen = true;
+                } else if(command.equals("stop")) {
+                    isFrozen = true;
                 } else if(command.equals("info")) {
                     try {
                         new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
@@ -189,10 +191,10 @@ public class PacketAnalyzer {
                         e.printStackTrace();
                     }
 
-                    String name = packet.getArgument(1);
+                    String name = packet.getArgument(2);
 
                     for (Map.Entry<String, PlayerCharacter> player : playerCharacters.entrySet()) {
-                        if(player.getValue().getName().equals(name)) {
+                        if(player.getValue().getName() != null && player.getValue().getName().equals(name)) {
                             player.getValue().displayFullInfo();
                             isFrozen = true;
                             break;
@@ -207,6 +209,8 @@ public class PacketAnalyzer {
                             e.printStackTrace();
                         }
                         isFrozen = false;
+
+                        displayCharacter();
                     }
                 } else if(command.equals("clear")) {
                     try {
