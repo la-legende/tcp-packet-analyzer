@@ -7,6 +7,7 @@
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
 .idea/**/shelf
+.idea/**/tcp_packet_analyzer_jar.xml
 
 # Generated files
 .idea/**/contentModel.xml
@@ -48,6 +49,7 @@ cmake-build-*/
 
 # IntelliJ
 out/
+src/META-INF
 
 # mpeltonen/sbt-idea plugin
 .idea_modules/
