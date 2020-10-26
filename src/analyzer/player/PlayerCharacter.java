@@ -180,7 +180,7 @@ public class PlayerCharacter {
         stringBuilder.append("Damage done by onyx shadow: ").append(0).append("\n");        //TODO
         stringBuilder.append("Lowest hit: ").append(getLowestHit()).append("\n");
         stringBuilder.append("Biggest hit: ").append(getBiggestHit()).append("\n");
-        stringBuilder.append("Skilled used: ");
+        stringBuilder.append("Skills used: ");
         usedSkills.forEach(s -> {
             stringBuilder.append(s).append(" -> ");
         });
