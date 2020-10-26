@@ -7,8 +7,7 @@ import analyzer.tcpClient.TCPSetup;
 
 import java.io.IOException;
 import java.net.SocketException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class PacketAnalyzer {
     private Map<String, PlayerCharacter> playerCharacters;
@@ -235,21 +234,34 @@ public class PacketAnalyzer {
             e.printStackTrace();
         }
 
-        for (Map.Entry<String, PlayerCharacter> player : playerCharacters.entrySet()) {
-            stringBuilder = new StringBuilder();
-            stringBuilder.append("Player ID: ").append(player.getValue().getId()).append(" ");
-            stringBuilder.append("Player Name: ").append(player.getValue().getName()).append(" ");
-            stringBuilder.append("Full damage done: ").append(player.getValue().getDamage()).append(" ");
-            stringBuilder.append("Full amount of hits: ").append(player.getValue().getAmountOfHits()).append(" ");
-            stringBuilder.append("BonCritics hit: ").append(player.getValue().getBonCritics()).append(" ");
-            stringBuilder.append("Critical hits: ").append(player.getValue().getCritics()).append(" ");
-            stringBuilder.append("Missed hit: ").append(player.getValue().getMisses()).append(" ");
-            stringBuilder.append("Normal attack soft damage hits: ").append(player.getValue().getSoftDamageAmount()).append(" ");
-            stringBuilder.append("Number of summoned onyx: : ").append(player.getValue().getOnyxCounter()).append(" ");
-            stringBuilder.append("Damage done by onyx shadow: ").append(0).append(" ");        //TODO
-            stringBuilder.append("Lowest hit: ").append(player.getValue().getLowestHit()).append(" ");
-            stringBuilder.append("Biggest hit: ").append(player.getValue().getBiggestHit()).append(" ");
+        stringBuilder = new StringBuilder();
+        for (PlayerCharacter p : sortMap()) {
+            stringBuilder.append("ID: ").append(p.getId()).append(" ");
+            stringBuilder.append("Nick: ").append(p.getName()).append(" ");
+            stringBuilder.append("Damage: ").append(p.getDamage()).append(" ");
+            stringBuilder.append("Amount of hits: ").append(p.getAmountOfHits()).append(" ");
+            stringBuilder.append("BonCritics: ").append(p.getBonCritics()).append(" ");
+            stringBuilder.append("Critical: ").append(p.getCritics()).append(" ");
+            stringBuilder.append("Misses: ").append(p.getMisses()).append(" ");
+            stringBuilder.append("Normal bons: ").append(p.getSoftDamageAmount()).append(" ");
+            stringBuilder.append("Summoned onyx: ").append(p.getOnyxCounter()).append(" ");
+            stringBuilder.append("Onyx damage: ").append(0).append(" ");        //TODO
+            stringBuilder.append("Lowest hit: ").append(p.getLowestHit()).append(" ");
+            stringBuilder.append("Biggest hit: ").append(p.getBiggestHit()).append(" ");
             System.out.println(stringBuilder.toString() + "\n");
+            stringBuilder = new StringBuilder();
         }
+    }
+
+    public ArrayList<PlayerCharacter> sortMap() {
+        ArrayList<PlayerCharacter> sortedPlayers = new ArrayList<>();
+
+        for (Map.Entry<String, PlayerCharacter> player : playerCharacters.entrySet()) {
+            sortedPlayers.add(player.getValue());
+        }
+
+        sortedPlayers.sort(Comparator.comparing(PlayerCharacter::getDamage).reversed());
+
+        return sortedPlayers;
     }
 }
