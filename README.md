@@ -4,7 +4,8 @@ Mainly created and designed for BladeTiger12's Packet Logger.
 Setup:
 
 1. Download BladeTiger12's packet logger:
-https://www.elitepvpers.com/forum/nostale-hacks-bots-cheats-exploits/4297215-release-packetlogger.html
+
+[Packet Logger](https://www.elitepvpers.com/forum/nostale-hacks-bots-cheats-exploits/4297215-release-packetlogger.html)
 
 2. Downlaod damage counter from project releases. 
 
