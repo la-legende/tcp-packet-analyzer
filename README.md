@@ -13,3 +13,5 @@ Setup:
 4. Launch NosTale and inject packet logger.
 
 5. Run damage counter and have fun!
+
+6. Type !help in NosTale chat to see available commands.
