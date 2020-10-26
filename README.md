@@ -6,7 +6,7 @@ Setup:
 
 1. Download BladeTiger12's packet logger: [Packet Logger](https://www.elitepvpers.com/forum/nostale-hacks-bots-cheats-exploits/4297215-release-packetlogger.html)
 
-2. Downlaod damage counter from project releases. 
+2. Download damage counter from project's releases. 
 
 3. Makse sure you have at least Java SDK 8 installed.
 
