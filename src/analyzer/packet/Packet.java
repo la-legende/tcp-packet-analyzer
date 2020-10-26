@@ -22,7 +22,7 @@ public class Packet {
         packetType = packet.charAt(0) == '0' ? PacketType.RECEIVE : PacketType.SEND;
 
         for (int i = 2; i < packet.length(); i++) {
-            if (packet.charAt(i) == ' ' || i == packet.length() - 1) {
+            if (packet.charAt(i) == ' ') {
                 packetFields.add(args.toString());
                 args = new StringBuilder();
                 argumentCounter++;
@@ -30,7 +30,11 @@ public class Packet {
                 args.append(packet.charAt(i));
             }
         }
-        packetFields.add(args.toString());
+
+        if(args.length() != 0) {
+            packetFields.add(args.toString());
+            argumentCounter++;
+        }
 
         argumentsAmount = argumentCounter;
     }
