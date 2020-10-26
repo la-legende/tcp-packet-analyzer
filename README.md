@@ -1,4 +1,4 @@
-##TCP Client based packet analyzer for MMORPG game NosTale. 
+## TCP Client based packet analyzer for MMORPG game NosTale. 
 
 Mainly created and designed for BladeTiger12's Packet Logger.
 
