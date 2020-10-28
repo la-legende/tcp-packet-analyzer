@@ -16,4 +16,4 @@ Setup:
 
 6. Type !help in NosTale's chat to see available commands.
 
-(!!!! Using in-game commands might cause ban, I don't take any responsibilites for any banned accounts !!!!)
+(!!!! Using in-game commands might cause ban, I don't take any responsibilites for banned accounts !!!!)
