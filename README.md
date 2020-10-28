@@ -15,3 +15,5 @@ Setup:
 5. Run damage counter and have fun!
 
 6. Type !help in NosTale's chat to see available commands.
+
+(!!!! Using in-game commands might cause ban, I don't take responsibilites for any banned accounts !!!!)
