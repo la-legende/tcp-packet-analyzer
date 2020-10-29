@@ -186,9 +186,9 @@ public class PlayerCharacter {
         usedSkills.forEach(s -> {
             stringBuilder.append(s).append(" -> ");
         });
-        //killedPlayers.forEach(p -> {
-        //    stringBuilder.append("Killed player id: ").append(p.getId()).append("  |  ").append("Killed player name: ").append(p.getName()).append("\n");
-        //});
+        killedPlayers.forEach(p -> {
+            stringBuilder.append("Killed player id: ").append(p.getId()).append("  |  ").append("Killed player name: ").append(p.getName()).append("\n");
+        });
         stringBuilder.append("\n");
 
         System.out.println(stringBuilder.toString());
