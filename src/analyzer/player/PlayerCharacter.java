@@ -1,7 +1,11 @@
 package analyzer.player;
 
+import javax.print.attribute.HashPrintJobAttributeSet;
+import java.sql.DatabaseMetaData;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class PlayerCharacter {
     private int playerId;
@@ -17,8 +21,7 @@ public class PlayerCharacter {
     private int misses;
     private boolean wasSoftDamage;
     private int softDamageAmount;
-    private int onyxCounter;
-    private int lastHitDamage;
+    private Map<String, OnyxGhost> onyxes;
     private int lowestHit;
     private int biggestHit;
     private List<Integer> usedSkills;
@@ -32,6 +35,7 @@ public class PlayerCharacter {
         this.level = level;
         this.heroLevel = heroLevel;
         this.family = family;
+        this.onyxes = new HashMap<>();
 
         damage = 0;
         amountOfHits = 0;
@@ -40,8 +44,6 @@ public class PlayerCharacter {
         misses = 0;
         wasSoftDamage = false;
         softDamageAmount = 0;
-        onyxCounter = 0;
-        lastHitDamage = 0;
         lowestHit = 0;
         biggestHit = 0;
         usedSkills = new ArrayList<>();
@@ -62,7 +64,6 @@ public class PlayerCharacter {
     public void onDamageDealt(int damage) {
         if(damage != 0) {
             softDamageAmount++;
-            lastHitDamage = damage;
 
             this.damage += damage;
             lowestHit = Math.min(damage, lowestHit);
@@ -154,7 +155,27 @@ public class PlayerCharacter {
     }
 
     public int getOnyxCounter() {
-        return onyxCounter;
+        return onyxes.size();
+    }
+
+    public void addDamageToOnyx(String damage, String onyxId) {
+        if(onyxes.containsKey(onyxId)) {
+            onyxes.get(onyxId).addDamage(damage);
+        }
+    }
+
+    public void addOnyx(OnyxGhost onyx) {
+        onyxes.put(onyx.getOnyxId(), onyx);
+    }
+
+    public int getOnyxDamage() {
+        int damage = 0;
+
+        for(Map.Entry<String, OnyxGhost> onyx : onyxes.entrySet()) {
+            damage += onyx.getValue().getDamage();
+        }
+
+        return damage;
     }
 
     public int getLowestHit() {
@@ -179,7 +200,7 @@ public class PlayerCharacter {
         stringBuilder.append("Missed hit: ").append(getMisses()).append("\n");
         stringBuilder.append("Normal attack soft damage hits: ").append(getSoftDamageAmount()).append("\n");
         stringBuilder.append("Number of summoned onyx: : ").append(getOnyxCounter()).append("\n");
-        stringBuilder.append("Damage done by onyx shadow: ").append(0).append("\n");        //TODO
+        stringBuilder.append("Damage done by onyx shadow: ").append(getOnyxDamage()).append("\n");
         stringBuilder.append("Lowest hit: ").append(getLowestHit()).append("\n");
         stringBuilder.append("Biggest hit: ").append(getBiggestHit()).append("\n");
         stringBuilder.append("Skills used: ");
