@@ -63,8 +63,6 @@ public class PlayerCharacter {
 
     public void onDamageDealt(int damage) {
         if(damage != 0) {
-            softDamageAmount++;
-
             this.damage += damage;
             lowestHit = Math.min(damage, lowestHit);
             biggestHit = Math.max(damage, biggestHit);
