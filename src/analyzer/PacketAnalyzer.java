@@ -2,7 +2,9 @@ package analyzer;
 
 import analyzer.packet.Packet;
 import analyzer.packet.PacketType;
+import analyzer.player.OnyxGhost;
 import analyzer.player.PlayerCharacter;
+import analyzer.raids.RaidInstance;
 import analyzer.tcpClient.TCPSetup;
 
 import java.io.IOException;
@@ -11,11 +13,17 @@ import java.util.*;
 
 public class PacketAnalyzer {
     private Map<String, PlayerCharacter> playerCharacters;
+    private List<OnyxGhost> onyxGhosts;
+    private RaidInstance raidInstance;
     private boolean isFrozen;
+    private boolean isOnRaid;
 
     public PacketAnalyzer() {
         playerCharacters = new HashMap<>();
+        onyxGhosts = new ArrayList<>();
         isFrozen = false;
+        raidInstance = null;
+        isOnRaid = false;
     }
 
     public static void main(String[] args) {
@@ -95,6 +103,10 @@ public class PacketAnalyzer {
                 }
 
                 //System.out.println("Registered character!");
+            } else if(packet.getArgument(1).equals("3")) {
+                if(packet.getArgument(2).equals(OnyxGhost.ONYX_MODEL)) {
+                    onyxGhosts.add(new OnyxGhost(packet.getArgument(3), packet.getArgument(4), packet.getArgument(5)));
+                }
             }
         }else if(packetHeader.equals("su")) {
             if(packet.getArgument(1).equals("1")) {
@@ -128,12 +140,34 @@ public class PacketAnalyzer {
                     }
                 }
 
-                playerCharacter.addUsedSkill(Integer.parseInt(packet.getArgument(5)));
-                playerCharacter.onDamageDealt(Integer.parseInt(packet.getArgument(13)));
-                playerCharacter.addHitType(Integer.parseInt(packet.getArgument(14)));
+                if(isOnRaid) {
+                    if(raidInstance != null && raidInstance.getBossId().equals(packet.getArgument(4))) {
+                        playerCharacter.addUsedSkill(Integer.parseInt(packet.getArgument(5)));
+                        playerCharacter.onDamageDealt(Integer.parseInt(packet.getArgument(13)));
+                        playerCharacter.addHitType(Integer.parseInt(packet.getArgument(14)));
 
-                displayCharacter();
+                        displayCharacters();
+                    }
+                } else {
+                    playerCharacter.addUsedSkill(Integer.parseInt(packet.getArgument(5)));
+                    playerCharacter.onDamageDealt(Integer.parseInt(packet.getArgument(13)));
+                    playerCharacter.addHitType(Integer.parseInt(packet.getArgument(14)));
+
+                    displayCharacters();
+                }
                 //System.out.println("Registered damage");
+            } else if (packet.getArgument(1).equals("3")) {
+                if(isOnRaid) {
+                    if(raidInstance != null && raidInstance.getBossId().equals(packet.getArgument(4))) {
+                        for(Map.Entry<String, PlayerCharacter> character : playerCharacters.entrySet()) {
+                            character.getValue().addDamageToOnyx(packet.getArgument(13), packet.getArgument(2));
+                        }
+                    }
+                } else {
+                    for(Map.Entry<String, PlayerCharacter> character : playerCharacters.entrySet()) {
+                        character.getValue().addDamageToOnyx(packet.getArgument(13), packet.getArgument(2));
+                    }
+                }
             }
         } else if(packetHeader.equals("eff")) {
             if (packet.getArgument(3).equals("15")) {
@@ -152,8 +186,41 @@ public class PacketAnalyzer {
                 } else {
                     playerCharacters.get(playerId).setWasSoftDamage();
                 }
-
                 //System.out.println("Registered softDamage.");
+            }
+        } else if(packetHeader.equals("guri")) {
+            if(packet.getArgument(1).equals("31") && packet.getArgument(2).equals("1")) {
+                onyxGhosts.forEach(onyxGhost -> {
+                    if(onyxGhost.compareCoords(packet.getArgument(4), packet.getArgument(5))) {
+                        for(Map.Entry<String, PlayerCharacter> character : playerCharacters.entrySet()) {
+                            if(character.getKey().equals(packet.getArgument(3))) {
+                                character.getValue().addOnyx(onyxGhost);
+                            }
+                        }
+                    }
+                });
+            }
+        } else if(packetHeader.equals("die")) {
+            if(packet.getArgument(1).equals("3") && packet.getArgument(3).equals("3")
+                    && packet.getArgument(2).equals(packet.getArgument(4))) {
+                onyxGhosts.removeIf(onyxGhost -> packet.getArgument(2).equals(onyxGhost.getOnyxId()));
+            }
+        } else if(packetHeader.equals("raid") || packetHeader.equals("raidf")) {
+            raidInstance = new RaidInstance(java.time.LocalTime.now());
+        } else if(packetHeader.equals("rboss")) {
+            if(raidInstance != null) {
+                raidInstance.setBossId(packet.getArgument(2));
+                raidInstance.setBossHp(packet.getArgument(4));
+            }
+        } else if(packetHeader.equals("msgi2")) {
+            if(packet.getArgument(1).equals("0") && packet.getArgument(2).equals("777")
+                    && packet.getArgument(3).equals("1") && raidInstance != null) {
+                raidInstance.addDeath(packet.getArgument(4));
+            }
+        } else if(packetHeader.equals("throw")) {
+            if(raidInstance != null) {
+                displayCharacters();
+                raidInstance.displayInfo();
             }
         }
     }
@@ -178,6 +245,8 @@ public class PacketAnalyzer {
                     System.out.println("!info <player_name> -> you can display more info about specified player if his nickname was registered. ");
                     System.out.println("!resume -> unfreezes counter.");
                     System.out.println("!clear -> clear all info about everyone ever registered.");
+                    System.out.println("!raid -> counts damage done on boss on raid");
+                    System.out.println("!eraid -> quits from raid state and returns to normal counting");
 
                     isFrozen = true;
                 } else if(command.equals("stop")) {
@@ -208,7 +277,7 @@ public class PacketAnalyzer {
                         }
                         isFrozen = false;
 
-                        displayCharacter();
+                        displayCharacters();
                     }
                 } else if(command.equals("clear")) {
                     try {
@@ -218,13 +287,38 @@ public class PacketAnalyzer {
                     }
 
                     playerCharacters = new HashMap<>();
+                    raidInstance = null;
+                } else if(command.equals("raid")) {
+                    isOnRaid = true;
+                    isFrozen = false;
+
+                    try {
+                        new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+                    } catch (InterruptedException | IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    playerCharacters = new HashMap<>();
+                    raidInstance = null;
+                } else if(command.equals("eraid")) {
+                    isOnRaid = false;
+                    isFrozen = false;
+
+                    try {
+                        new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+                    } catch (InterruptedException | IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    playerCharacters = new HashMap<>();
+                    raidInstance = null;
                 }
             }
         }
     }
 
 
-    public void displayCharacter() {
+    public void displayCharacters() {
         StringBuilder stringBuilder;
 
         try {
@@ -243,10 +337,10 @@ public class PacketAnalyzer {
             stringBuilder.append("Critical: ").append(p.getCritics()).append(" ");
             stringBuilder.append("Misses: ").append(p.getMisses()).append(" ");
             stringBuilder.append("Normal bons: ").append(p.getSoftDamageAmount()).append(" ");
-            stringBuilder.append("Summoned onyx: ").append(p.getOnyxCounter()).append(" ");
-            stringBuilder.append("Onyx damage: ").append(0).append(" ");        //TODO
             stringBuilder.append("Lowest hit: ").append(p.getLowestHit()).append(" ");
             stringBuilder.append("Biggest hit: ").append(p.getBiggestHit()).append(" ");
+            stringBuilder.append("Summoned onyx: ").append(p.getOnyxCounter()).append(" ");
+            stringBuilder.append("Onyx damage: ").append(p.getOnyxDamage()).append(" ");
             System.out.println(stringBuilder.toString() + "\n");
             stringBuilder = new StringBuilder();
         }
