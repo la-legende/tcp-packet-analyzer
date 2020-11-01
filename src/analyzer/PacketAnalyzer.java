@@ -10,18 +10,21 @@ import analyzer.tcpClient.TCPSetup;
 import java.io.IOException;
 import java.net.SocketException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class PacketAnalyzer {
     private Map<String, PlayerCharacter> playerCharacters;
     private List<OnyxGhost> onyxGhosts;
     private RaidInstance raidInstance;
     private boolean isFrozen;
+    private boolean isRaidFrozen;
     private boolean isOnRaid;
 
     public PacketAnalyzer() {
         playerCharacters = new HashMap<>();
         onyxGhosts = new ArrayList<>();
         isFrozen = false;
+        isRaidFrozen = false;
         raidInstance = null;
         isOnRaid = false;
     }
@@ -57,6 +60,7 @@ public class PacketAnalyzer {
         String packetHeader = packet.getHeader();
 
         if(packetHeader.equals("c_info")) {
+            playerCharacters = new HashMap<>();
             String playerId = packet.getArgument(6);
 
             if(playerCharacters.containsKey(playerId)) {
@@ -147,6 +151,14 @@ public class PacketAnalyzer {
                         playerCharacter.addHitType(Integer.parseInt(packet.getArgument(14)));
 
                         displayCharacters();
+
+                        if(packet.getArgument(11).equals("0")) {
+                            raidInstance.displayInfo();
+                            playerCharacters = new HashMap<>();
+                            raidInstance = null;
+                            isOnRaid = false;
+                            isRaidFrozen = true;
+                        }
                     }
                 } else {
                     playerCharacter.addUsedSkill(Integer.parseInt(packet.getArgument(5)));
@@ -206,6 +218,7 @@ public class PacketAnalyzer {
                 onyxGhosts.removeIf(onyxGhost -> packet.getArgument(2).equals(onyxGhost.getOnyxId()));
             }
         } else if(packetHeader.equals("raid") || packetHeader.equals("raidf")) {
+            isOnRaid = true;
             raidInstance = new RaidInstance(java.time.LocalTime.now());
         } else if(packetHeader.equals("rboss")) {
             if(raidInstance != null) {
@@ -218,10 +231,7 @@ public class PacketAnalyzer {
                 raidInstance.addDeath(packet.getArgument(4));
             }
         } else if(packetHeader.equals("throw")) {
-            if(raidInstance != null) {
-                displayCharacters();
-                raidInstance.displayInfo();
-            }
+            if(isRaidFrozen) { isRaidFrozen = false; }
         }
     }
 
@@ -245,8 +255,6 @@ public class PacketAnalyzer {
                     System.out.println("!info <player_name> -> you can display more info about specified player if his nickname was registered. ");
                     System.out.println("!resume -> unfreezes counter.");
                     System.out.println("!clear -> clear all info about everyone ever registered.");
-                    System.out.println("!raid -> counts damage done on boss on raid");
-                    System.out.println("!eraid -> quits from raid state and returns to normal counting");
 
                     isFrozen = true;
                 } else if(command.equals("stop")) {
@@ -288,30 +296,31 @@ public class PacketAnalyzer {
 
                     playerCharacters = new HashMap<>();
                     raidInstance = null;
-                } else if(command.equals("raid")) {
-                    isOnRaid = true;
-                    isFrozen = false;
 
-                    try {
-                        new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
-                    } catch (InterruptedException | IOException e) {
-                        e.printStackTrace();
-                    }
-
-                    playerCharacters = new HashMap<>();
-                    raidInstance = null;
-                } else if(command.equals("eraid")) {
-                    isOnRaid = false;
-                    isFrozen = false;
-
-                    try {
-                        new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
-                    } catch (InterruptedException | IOException e) {
-                        e.printStackTrace();
-                    }
-
-                    playerCharacters = new HashMap<>();
-                    raidInstance = null;
+//                } else if(command.equals("raid")) {
+//                    isOnRaid = true;
+//                    isFrozen = false;
+//
+//                    try {
+//                        new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+//                    } catch (InterruptedException | IOException e) {
+//                        e.printStackTrace();
+//                    }
+//
+//                    playerCharacters = new HashMap<>();
+//                    raidInstance = null;
+//                } else if(command.equals("eraid")) {
+//                    isOnRaid = false;
+//                    isFrozen = false;
+//
+//                    try {
+//                        new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+//                    } catch (InterruptedException | IOException e) {
+//                        e.printStackTrace();
+//                    }
+//
+//                    playerCharacters = new HashMap<>();
+//                    raidInstance = null;
                 }
             }
         }
@@ -319,6 +328,8 @@ public class PacketAnalyzer {
 
 
     public void displayCharacters() {
+        if(isRaidFrozen) return;
+
         StringBuilder stringBuilder;
 
         try {
